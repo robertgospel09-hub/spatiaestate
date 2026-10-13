@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | SpatiaEstate</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="dashboard">
+  <div class="app">
+    <div data-sidebar></div>
+    <main class="main">
+      <header class="page-head">
+        <div>
+          <h1>Welcome back, Chidi</h1>
+          <p>Here is the performance report for SpatiaEstate today.</p>
+        </div>
+        <div class="head-actions">
+          <a href="properties.html" class="btn btn-primary" data-icon="plus">Add New Property</a>
+          <div data-admin-chip></div>
+        </div>
+      </header>
+
+      <section class="kpis">
+        <div class="kpi">
+          <div class="kpi-top"><span class="kpi-label">Total Properties</span><span class="kpi-icon" data-icon="building"></span></div>
+          <div class="kpi-value">24</div><div class="kpi-sub">+3 this week</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-top"><span class="kpi-label">Published Tours</span><span class="kpi-icon" data-icon="eye"></span></div>
+          <div class="kpi-value">18</div><div class="kpi-sub">85% Active Rate</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-top"><span class="kpi-label">Total Leads</span><span class="kpi-icon" data-icon="users"></span></div>
+          <div class="kpi-value">142</div><div class="kpi-sub">42 diaspora buyers</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-top"><span class="kpi-label">Reservation Payments</span><span class="kpi-icon green" data-icon="card"></span></div>
+          <div class="kpi-value">₦12.4M</div><div class="kpi-sub">+2.1M pending</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h3>Recent Lead Activities</h3>
+            <p>Track real estate interactions with local and diaspora buyers.</p>
+          </div>
+          <a href="leads.html" class="btn btn-outline">View All Leads</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Buyer Name</th><th>Country</th><th>Property Interest</th><th>Intent</th><th>Status</th><th class="t-right">Date</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/data.js"></script>
+  <script>
+    const intentTone = { Buy: 'gray', Reserve: 'red', Rent: 'gray' };
+    document.getElementById('rows').innerHTML = DATA.leads.slice(0, 5).map((l) => `
+      <tr>
+        <td><div class="t-strong">${l.name}</div><div class="t-sub">${l.phone}</div></td>
+        <td style="white-space:nowrap">${l.country} ${l.flag}</td>
+        <td class="t-strong">${l.property}</td>
+        <td>${badge(l.intent, intentTone[l.intent], 'sm')}</td>
+        <td>${badge(l.status, TONES.status[l.status], 'sm')}</td>
+        <td class="t-right t-muted">${l.date}</td>
+      </tr>`).join('');
+  </script>
+</body>
+</html>

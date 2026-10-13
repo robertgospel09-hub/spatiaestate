@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tour Builder | SpatiaEstate</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .main.flush { padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 28px 40px 24px; margin: 0; }
+    .workspace { flex: 1; display: grid; grid-template-columns: 260px 1fr 300px; background: #fff; }
+    .workspace > * { min-width: 0; }
+    .rooms { padding: 28px 24px; border-right: 1px solid var(--border); }
+    .rooms-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .rooms-head h3 { font-size: 20px; }
+    .add-room { background: var(--blue-soft); color: var(--blue); font-family: var(--font-head); font-weight: 600; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+    .room { display: flex; align-items: center; gap: 14px; width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid transparent; text-align: left; margin-bottom: 8px; }
+    .room:hover { background: var(--bg); }
+    .room.active { border-color: #4f86f7; background: #fff; }
+    .room img { width: 62px; height: 46px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
+    .room b { font-family: var(--font-head); font-weight: 600; font-size: 16px; display: block; }
+    .room small { white-space: nowrap; font-family: var(--font-mono); color: var(--blue); font-size: 11px; letter-spacing: .03em; }
+
+    .stage-col { background: var(--bg); padding: 28px 32px; border-right: 1px solid var(--border); min-width: 0; }
+    .tools { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tools .btn { height: 40px; padding: 0 16px; }
+    .tools .spacer { flex: 1; }
+    .tools .btn.on { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
+    .stage { position: relative; aspect-ratio: 1 / 1; width: min(100%, max(420px, calc(100vh - 230px))); margin: 0 auto; border-radius: 16px; overflow: hidden; display: grid; place-items: center; transition: background .3s; }
+    .scene { position: relative; width: 100%; }
+    .scene img { width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; transition: opacity .3s; }
+    .stage.placing .scene { cursor: crosshair; }
+    .placing-hint { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: var(--navy); color: #fff; padding: 8px 14px; border-radius: 999px; font-size: 13px; z-index: 3; }
+    .compass { position: absolute; right: 20px; bottom: 20px; width: 54px; height: 54px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 4px 14px rgba(0,0,0,.15); z-index: 2; transition: transform .6s; }
+    .compass svg { width: 26px; height: 26px; }
+    .popover { position: absolute; z-index: 4; background: #fff; border-radius: 12px; padding: 14px 16px; width: 260px; box-shadow: 0 12px 30px rgba(0,0,0,.2); font-size: 14px; color: var(--muted); }
+    .popover b { font-family: var(--font-head); color: var(--text); display: block; margin-bottom: 4px; font-size: 15px; }
+
+    .panel { padding: 28px 24px; }
+    .panel h3 { font-size: 20px; margin-bottom: 24px; }
+    .panel .label { display: block; margin-bottom: 12px; }
+    .angle { margin-bottom: 20px; }
+    .angle-top { display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+    .angle-top b { font-family: var(--font-mono); color: var(--text); font-weight: 500; }
+    input[type=range] { width: 100%; appearance: none; -webkit-appearance: none; height: 6px; border-radius: 4px; background: #e3e8ef; outline: none; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--navy); cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+    input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--navy); cursor: pointer; border: 2px solid #fff; }
+    .hs-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg); border-radius: 10px; margin-bottom: 10px; font-family: var(--font-head); font-weight: 600; }
+    .hs-item > svg { width: 18px; height: 18px; color: var(--blue); flex-shrink: 0; }
+    .hs-item.hs-info > svg { color: var(--orange); }
+    .hs-item span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hs-item .icon-btn { width: 28px; height: 28px; color: var(--faint); }
+    .hs-item .icon-btn svg { width: 18px; height: 18px; }
+    .start-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 6px 0 26px; font-size: 14px; color: var(--muted); }
+    .empty { color: var(--faint); font-size: 14px; padding: 10px 0; }
+
+    @media (max-width: 1280px) { .workspace { grid-template-columns: 230px 1fr 270px; } .stage-col { padding: 24px 20px; } }
+    @media (max-width: 1080px) {
+      .workspace { grid-template-columns: 1fr; }
+      .rooms { border-right: 0; border-bottom: 1px solid var(--border); }
+      .room-list { display: flex; gap: 8px; overflow-x: auto; }
+      .room { width: auto; flex-shrink: 0; margin: 0; }
+      .stage { width: 100%; }
+    }
+    @media (max-width: 900px) { .topbar { padding: 20px 16px; } .stage-col, .rooms, .panel { padding: 20px 16px; } .hotspot { height: 32px; font-size: 13px; } .hotspot .hs-ic { width: 22px; height: 22px; } }
+  </style>
+</head>
+<body data-page="properties">
+  <div class="app">
+    <div data-sidebar></div>
+    <main class="main flush">
+      <header class="page-head topbar">
+        <div>
+          <div class="crumbs"><a href="dashboard.html">Properties</a><i>/</i><a href="properties.html">Lekki Phase 1 Duplex</a><i>/</i><span class="cur">Tour Builder</span></div>
+          <h1>Tour Builder Workspace</h1>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-outline" id="saveWs">Save Workspace</button>
+          <button class="btn btn-primary" id="publishTour">Publish Tour</button>
+          <div data-admin-chip></div>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <aside class="rooms">
+          <div class="rooms-head">
+            <h3>Tour Rooms</h3>
+            <label class="add-room">+ Add<input type="file" accept="image/*" hidden id="addRoom"></label>
+          </div>
+          <div class="room-list" id="roomList"></div>
+        </aside>
+
+        <section class="stage-col">
+          <div class="tools">
+            <button class="btn btn-outline" id="addNav">+ Add Hotspot</button>
+            <button class="btn btn-outline" id="addInfo">+ Add Info Label</button>
+            <span class="spacer"></span>
+            <a class="btn btn-outline" href="tour.html" target="_blank" rel="noopener">Preview Tour <span data-icon="arrowUpRight" style="display:contents"></span></a>
+          </div>
+          <div class="stage" id="stage">
+            <div class="scene" id="scene"><img id="sceneImg" alt=""></div>
+            <button class="compass" id="compass" aria-label="Reset to default angle" data-icon="compass"></button>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <h3>Room Settings</h3>
+          <div class="field">
+            <label class="label" for="roomName">Room Identifier Name</label>
+            <input id="roomName" class="input white">
+          </div>
+          <div class="start-row">Set as starting scene
+            <label class="toggle"><input type="checkbox" id="isStart"><span></span></label>
+          </div>
+          <span class="label">Default Angle</span>
+          <div class="angle"><div class="angle-top">Yaw Direction <b id="yawVal">0°</b></div><input type="range" id="yaw" min="0" max="359"></div>
+          <div class="angle"><div class="angle-top">Pitch/Horizon <b id="pitchVal">0°</b></div><input type="range" id="pitch" min="-30" max="30"></div>
+          <span class="label" style="margin-top:28px">Room Hotspots</span>
+          <div id="hsList"></div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- Hotspot editor -->
+  <div class="overlay" id="hsModal">
+    <div class="modal" style="max-width:480px">
+      <div class="modal-head"><h2 style="font-size:24px">Edit Hotspot</h2><button class="close-btn" data-close aria-label="Close" data-icon="xCircle"></button></div>
+      <div class="field"><label class="label plain" for="hsLabel">Label</label><input id="hsLabel" class="input white"></div>
+      <div class="field" id="hsTargetField"><label class="label plain" for="hsTarget">Links to room</label><select id="hsTarget" class="select white"></select></div>
+      <div class="field" id="hsNoteField"><label class="label plain" for="hsNote">Details shown to buyers</label><textarea id="hsNote" class="textarea white"></textarea></div>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+        <button class="btn btn-primary" id="hsSave">Save</button>
+        <button class="btn btn-outline" data-close>Cancel</button>
+        <button class="link-danger" id="hsDelete" style="margin-left:auto">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/tour-data.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let rooms = loadRooms();
+    const qRoom = new URLSearchParams(location.search).get('room');
+    let current = rooms.find((r) => r.id === qRoom) ? qRoom : 'kitchen';
+    let placing = null; // 'nav' | 'info'
+    let editing = null; // hotspot index
+    const room = () => rooms.find((r) => r.id === current);
+
+    function renderRooms() {
+      $('roomList').innerHTML = rooms.map((r) => `
+        <button class="room ${r.id === current ? 'active' : ''}" data-room="${r.id}">
+          <img src="${r.img}" alt="">
+          <div><b>${r.name}</b>${r.start ? '<small>★ STARTING SCENE</small>' : ''}</div>
+        </button>`).join('');
+    }
+
+    function renderScene() {
+      const r = room();
+      const img = $('sceneImg');
+      $('stage').style.background = r.stage;
+      img.style.opacity = 0;
+      img.onload = () => (img.style.opacity = 1);
+      img.src = r.img; img.alt = r.name;
+      $('scene').style.aspectRatio = r.ratio;
+      $('scene').querySelectorAll('.hotspot, .popover').forEach((n) => n.remove());
+      r.hotspots.forEach((h, i) => {
+        const b = document.createElement('button');
+        b.className = `hotspot ${h.type === 'info' ? 'info' : ''} ${h.right ? 'right' : ''}`;
+        b.style.left = h.x + '%'; b.style.top = h.y + '%';
+        b.style.animationDelay = i * 60 + 'ms';
+        b.innerHTML = `<span class="hs-ic">${icon(h.type === 'info' ? 'info' : 'arrowLeft')}</span>${h.label}`;
+        b.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (h.type === 'nav' && h.target) return go(h.target);
+          showPopover(h, b);
+        });
+        $('scene').appendChild(b);
+      });
+    }
+
+    function showPopover(h, anchor) {
+      $('scene').querySelectorAll('.popover').forEach((n) => n.remove());
+      const p = document.createElement('div');
+      p.className = 'popover';
+      p.innerHTML = `<b>${h.label}</b>${h.note || 'Add details for buyers from the hotspot settings.'}`;
+      const sc = $('scene').getBoundingClientRect(), a = anchor.getBoundingClientRect();
+      p.style.top = Math.min(a.bottom - sc.top + 8, sc.height - 120) + 'px';
+      p.style.left = Math.max(8, Math.min(a.left - sc.left, sc.width - 268)) + 'px';
+      $('scene').appendChild(p);
+    }
+
+    function renderPanel() {
+      const r = room();
+      $('roomName').value = r.name;
+      $('isStart').checked = !!r.start;
+      $('yaw').value = r.yaw; $('yawVal').textContent = r.yaw + '°';
+      $('pitch').value = r.pitch; $('pitchVal').textContent = r.pitch + '°';
+      $('hsList').innerHTML = r.hotspots.length ? r.hotspots.map((h, i) => `
+        <div class="hs-item hs-${h.type}">${icon(h.type === 'info' ? 'info' : 'arrowLeft')}<span>${h.label}</span>
+          <button class="icon-btn" data-edit="${i}" aria-label="Edit ${h.label}">${icon('settings')}</button></div>`).join('')
+        : '<p class="empty">No hotspots yet. Use “+ Add Hotspot” and click on the scene.</p>';
+    }
+
+    function go(id) { current = id; placing = null; updatePlacing(); renderRooms(); renderScene(); renderPanel(); }
+
+    $('roomList').addEventListener('click', (e) => { const b = e.target.closest('[data-room]'); if (b) go(b.dataset.room); });
+    $('roomName').addEventListener('input', (e) => { room().name = e.target.value || 'Untitled Room'; renderRooms(); });
+    $('isStart').addEventListener('change', (e) => { rooms.forEach((r) => (r.start = false)); room().start = e.target.checked; if (!e.target.checked) rooms[0].start = true; renderRooms(); });
+    $('yaw').addEventListener('input', (e) => { room().yaw = +e.target.value; $('yawVal').textContent = e.target.value + '°'; });
+    $('pitch').addEventListener('input', (e) => { room().pitch = +e.target.value; $('pitchVal').textContent = e.target.value + '°'; });
+
+    // Placement mode
+    function updatePlacing() {
+      $('stage').classList.toggle('placing', !!placing);
+      $('addNav').classList.toggle('on', placing === 'nav');
+      $('addInfo').classList.toggle('on', placing === 'info');
+      $('stage').querySelector('.placing-hint')?.remove();
+      if (placing) $('stage').insertAdjacentHTML('afterbegin', `<div class="placing-hint">Click on the scene to place the ${placing === 'nav' ? 'hotspot' : 'info label'}</div>`);
+    }
+    $('addNav').onclick = () => { placing = placing === 'nav' ? null : 'nav'; updatePlacing(); };
+    $('addInfo').onclick = () => { placing = placing === 'info' ? null : 'info'; updatePlacing(); };
+    $('scene').addEventListener('click', (e) => {
+      $('scene').querySelectorAll('.popover').forEach((n) => n.remove());
+      if (!placing) return;
+      const sc = $('scene').getBoundingClientRect();
+      const x = ((e.clientX - sc.left) / sc.width) * 100, y = ((e.clientY - sc.top) / sc.height) * 100 - 3;
+      const other = rooms.find((r) => r.id !== current);
+      const h = placing === 'nav'
+        ? { type: 'nav', label: `Go to ${other.name}`, target: other.id, x, y }
+        : { type: 'info', label: 'New info label', note: '', x, y };
+      if (x > 72) h.right = true;
+      room().hotspots.push(h);
+      placing = null; updatePlacing(); renderScene(); renderPanel();
+      openEditor(room().hotspots.length - 1);
+    });
+
+    // Hotspot editor
+    function openEditor(i) {
+      editing = i;
+      const h = room().hotspots[i];
+      $('hsLabel').value = h.label;
+      $('hsTargetField').classList.toggle('hidden', h.type !== 'nav');
+      $('hsNoteField').classList.toggle('hidden', h.type !== 'info');
+      $('hsTarget').innerHTML = rooms.filter((r) => r.id !== current).map((r) => `<option value="${r.id}" ${r.id === h.target ? 'selected' : ''}>${r.name}</option>`).join('');
+      $('hsNote').value = h.note || '';
+      openModal('hsModal');
+      setTimeout(() => $('hsLabel').focus(), 50);
+    }
+    $('hsList').addEventListener('click', (e) => { const b = e.target.closest('[data-edit]'); if (b) openEditor(+b.dataset.edit); });
+    $('hsTarget').addEventListener('change', (e) => {
+      const r = rooms.find((x) => x.id === e.target.value);
+      if (/^Go to /.test($('hsLabel').value)) $('hsLabel').value = 'Go to ' + r.name;
+    });
+    $('hsSave').onclick = () => {
+      const h = room().hotspots[editing];
+      h.label = $('hsLabel').value.trim() || h.label;
+      if (h.type === 'nav') h.target = $('hsTarget').value; else h.note = $('hsNote').value.trim();
+      closeModal('hsModal'); renderScene(); renderPanel();
+    };
+    $('hsDelete').onclick = () => { room().hotspots.splice(editing, 1); closeModal('hsModal'); renderScene(); renderPanel(); };
+
+    // New room
+    $('addRoom').addEventListener('change', (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      const url = URL.createObjectURL(f);
+      const im = new Image();
+      im.onload = () => {
+        const id = 'room-' + Date.now();
+        rooms.push({ id, name: f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' '), img: url, ratio: im.width / im.height, stage: '#0c1e36', yaw: 0, pitch: 0, hotspots: [] });
+        go(id);
+        toast('Room added', 'Add hotspots to link it into the tour.');
+      };
+      im.src = url; e.target.value = '';
+    });
+
+    // Compass / save / publish
+    let spins = 0;
+    $('compass').onclick = () => {
+      spins += 360; $('compass').style.transform = `rotate(${spins}deg)`;
+      toast('View reset', `${room().name} faces ${room().yaw}° yaw, ${room().pitch}° pitch.`);
+    };
+    $('saveWs').onclick = () => saveRooms(rooms) ? toast('Workspace saved', 'Your rooms and hotspots are stored on this device.') : toast('Saved for this session', 'Browser storage is unavailable here.');
+    $('publishTour').onclick = () => { saveRooms(rooms); toast('Tour published', 'Buyers can now explore this property in 360°.'); };
+
+    go(current);
+  </script>
+</body>
+</html>

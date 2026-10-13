@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Receipt RES-2026-0042 | SpatiaEstate</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body { background: #f0f3f7; font-family: "Inter", sans-serif; padding: 48px 16px; }
+    .toolbar { max-width: 794px; margin: 0 auto 20px; display: flex; justify-content: space-between; gap: 12px; }
+    .toolbar .btn { font-family: "Inter", sans-serif; }
+    .sheet { max-width: 794px; margin: 0 auto; background: #fff; padding: 52px 48px 36px; box-shadow: 0 20px 50px rgba(12,30,54,.08); color: #0f172a; }
+    .sheet h1, .sheet h2, .sheet h3 { font-family: "Inter", sans-serif; letter-spacing: 0; }
+    .top { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand .v { width: 42px; height: 50px; border-radius: 6px; background: #0c1e36; color: #fff; font-weight: 700; font-size: 22px; display: grid; place-items: center; }
+    .brand b { display: block; font-size: 19px; font-weight: 700; }
+    .brand small { color: #475569; font-weight: 600; font-size: 12px; letter-spacing: .03em; }
+    .co { text-align: right; font-size: 12px; color: #64748b; line-height: 1.55; }
+    .co b { color: #0f172a; font-size: 14px; }
+    .co a { color: #1e3a8a; }
+    .sheet h1 { text-align: center; font-size: 24px; font-weight: 800; margin: 24px 0 12px; }
+    .meta { display: flex; justify-content: space-between; background: #f8fafc; padding: 9px 16px; border-radius: 6px; font-size: 14px; color: #475569; }
+    .meta b { color: #0f172a; } .meta b.blue { color: #1e3a8a; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin: 22px 0; align-items: start; }
+    .box { border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 8px; padding: 20px; font-size: 14px; color: #334155; }
+    .box h4 { font-size: 13px; letter-spacing: .03em; color: #64748b; font-weight: 600; margin-bottom: 10px; font-family: "Inter", sans-serif; }
+    .box h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .box p { line-height: 1.5; }
+    .box .small { font-size: 12.5px; color: #64748b; margin-top: 10px; }
+    .box .small b { color: #0f172a; font-weight: 600; }
+    .box .price { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; margin-top: 14px; padding-top: 12px; font-size: 13px; color: #64748b; font-weight: 600; }
+    .box .price b { color: #0f172a; font-size: 17px; }
+    .items { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; font-size: 15px; }
+    .items .row { display: flex; justify-content: space-between; padding: 12px 20px; border-top: 1px solid #e2e8f0; }
+    .items .hd { background: #0c1e36; color: #fff; font-weight: 600; border: 0; }
+    .items .muted { color: #64748b; }
+    .items .tot { background: #f8fafc; font-weight: 700; font-size: 16px; }
+    .items .tot b { color: #1e3a8a; font-size: 20px; }
+    .pay { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; margin: 22px 0; font-size: 13.5px; color: #64748b; display: grid; grid-template-columns: auto auto 1fr; gap: 10px 32px; align-items: center; }
+    .pay b { color: #0f172a; }
+    .pay .ok { justify-self: end; background: #dcfce7; color: #15803d; font-weight: 700; padding: 4px 12px; border-radius: 4px; font-size: 14px; }
+    .pay .ts { grid-column: 1 / -1; font-size: 12.5px; }
+    .terms { border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 8px; padding: 18px 22px; font-size: 13.5px; color: #334155; }
+    .terms h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; font-family: "Inter", sans-serif; }
+    .terms ul { padding-left: 18px; display: flex; flex-direction: column; gap: 8px; line-height: 1.45; }
+    .terms li::marker { color: #1e3a8a; }
+    .terms .g { color: #15803d; font-weight: 700; }
+    .foot { border-top: 1.5px solid #cbd5e1; margin-top: 30px; padding-top: 16px; text-align: center; font-size: 12px; color: #64748b; }
+    .foot b { display: block; color: #0f172a; font-size: 13px; margin: 6px 0 14px; letter-spacing: .02em; }
+    .foot small { font-size: 10.5px; }
+    @media (max-width: 680px) {
+      body { padding: 16px 8px; } .sheet { padding: 28px 18px; } .top { flex-direction: column; } .co { text-align: left; }
+      .two { grid-template-columns: 1fr; } .meta { flex-direction: column; gap: 4px; }
+      .pay { grid-template-columns: 1fr; } .pay .ok { justify-self: start; }
+    }
+    @media print {
+      body { background: #fff; padding: 0; } .toolbar { display: none; }
+      .sheet { box-shadow: none; max-width: none; padding: 24px; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <a href="confirmed.html" class="btn btn-outline btn-sm" data-icon="arrowLeft">Back</a>
+    <button class="btn btn-primary btn-sm" onclick="window.print()" data-icon="download">Save as PDF</button>
+  </div>
+
+  <article class="sheet">
+    <div class="top">
+      <div class="brand"><div class="v">V</div><div><b>SPATIA</b><small>TECH PROP</small></div></div>
+      <div class="co"><b>SpatiaEstate Properties Ltd</b><br>Block A, Lekki Phase 1, Lagos, Nigeria<br>RC: 1234567<br><a href="mailto:support@spatiaestate.com">support@spatiaestate.com</a></div>
+    </div>
+
+    <h1>RESERVATION DEPOSIT RECEIPT</h1>
+    <div class="meta"><span>Receipt No: <b class="blue">RES-2026-0042</b></span><span>Date: <b>July 25, 2026</b></span></div>
+
+    <div class="two">
+      <div class="box">
+        <h4>PROPERTY DETAILS</h4>
+        <h3>Banana Island Penthouse</h3>
+        <p>Block A, Banana Island, Ikoyi, Lagos, Nigeria</p>
+        <div class="small">Type: <b>5 Bedroom Luxury Penthouse</b><br>Size: <b>450 sqm</b></div>
+        <div class="price">Listed Price <b>₦850,000,000</b></div>
+      </div>
+      <div class="box">
+        <h4>BUYER DETAILS</h4>
+        <h3 data-buyer="name">Amaka Obi</h3>
+        <p data-buyer="email">amaka.obi@diaspora.com</p>
+        <div class="small">Phone: <b data-buyer="phone">+234 812 345 6789</b><br>Country: <b data-buyer="country">Nigeria</b></div>
+      </div>
+    </div>
+
+    <div class="items">
+      <div class="row hd"><span>Description</span><span>Amount</span></div>
+      <div class="row"><span>Initial Reservation Deposit</span><span>₦5,000,000</span></div>
+      <div class="row muted"><span>Platform Processing Fee</span><span>₦0.00</span></div>
+      <div class="row tot"><span>Total Amount Paid</span><b>₦5,000,000</b></div>
+    </div>
+
+    <div class="pay">
+      <span>Payment Method: <b id="method">Paystack (Local Cards)</b></span>
+      <span>Transaction ID: <b>PAY-TXN-8847291</b></span>
+      <span class="ok">SUCCESSFUL</span>
+      <span class="ts">Payment Timestamp: <b>July 25, 2026, 14:32 WAT</b></span>
+    </div>
+
+    <div class="terms">
+      <h4>RESERVATION TERMS &amp; CONDITIONS</h4>
+      <ul>
+        <li>Reservation Period: <b>30 Days</b> (secures and locks the asset from public market listing until <b>Aug 25, 2026</b>).</li>
+        <li>Refund Policy: <span class="g">Fully refundable</span> within 7 days of payment. Cancellations after this period are subject to standard developer hold policies.</li>
+        <li>Next Action Requirement: Complete the balance payment of <b>₦845,000,000</b> within the stipulated 30-day reservation window to finalize purchase execution.</li>
+      </ul>
+    </div>
+
+    <div class="foot">
+      This is an electronically generated receipt on the SpatiaEstate platform and is valid without physical signature.
+      <b>SPATIAESTATE | EXPLORE. TRUST. OWN.</b>
+      <small>© 2026 SpatiaEstate Properties Ltd | Block A, Lekki Phase 1, Lagos, Nigeria | RC: 1234567</small>
+    </div>
+  </article>
+
+  <script src="js/app.js"></script>
+  <script src="js/buyer.js"></script>
+  <script>
+    if (getPayment() === 'stripe') document.getElementById('method').textContent = 'Stripe (International)';
+  </script>
+</body>
+</html>

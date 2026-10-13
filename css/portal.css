@@ -1,0 +1,35 @@
+/* Buyer-facing portal: top bar shared by tour, reservation, confirmation */
+.portal-bar {
+  background: var(--navy); color: #fff; height: 72px; display: flex; align-items: center; gap: 24px;
+  padding: 0 40px; position: sticky; top: 0; z-index: 20;
+}
+.portal-bar .logo-box { width: 44px; height: 44px; border-radius: 4px; flex-shrink: 0; }
+.portal-bar .title { font-family: var(--font-head); font-weight: 600; font-size: 18px; padding-left: 24px; border-left: 1px solid rgba(255,255,255,.15); white-space: nowrap; }
+.listing-pill {
+  margin: 0 auto; background: #1b3050; border-radius: 10px; padding: 9px 18px; display: flex; align-items: center; gap: 12px;
+  font-size: 14px; white-space: nowrap; min-width: 0;
+}
+.listing-pill b { font-family: var(--font-head); color: var(--orange); font-weight: 700; letter-spacing: .01em; }
+.listing-pill i { width: 5px; height: 5px; border-radius: 50%; background: #fff; display: inline-block; }
+.listing-pill span { overflow: hidden; text-overflow: ellipsis; }
+.portal-bar .right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.portal-bar .btn-orange { height: 44px; font-weight: 700; letter-spacing: .02em; }
+.bookmark { width: 40px; height: 40px; display: grid; place-items: center; color: #fff; }
+.bookmark svg { width: 24px; height: 24px; }
+.buyer { display: flex; align-items: center; gap: 10px; font-size: 16px; }
+.buyer .avatar { background: var(--orange); }
+
+@media (max-width: 1000px) {
+  .listing-pill { display: none; }
+  .portal-bar .right { margin-left: auto; }
+}
+@media (max-width: 600px) {
+  .portal-bar { padding: 0 16px; gap: 12px; height: 64px; }
+  .portal-bar .title { font-size: 15px; padding-left: 12px; }
+  .portal-bar .btn-orange { padding: 0 14px; font-size: 13px; }
+  .buyer span:last-child { display: none; }
+}
+@media (max-width: 420px) {
+  .portal-bar .title { display: none; }
+  .portal-bar .right { gap: 6px; }
+}

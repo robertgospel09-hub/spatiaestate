@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign In | SpatiaEstate</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body { background: #4a5568; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+    .login { background: #fff; width: 100%; max-width: 680px; border-radius: 28px; padding: 64px 68px 56px; box-shadow: 0 30px 60px rgba(0,0,0,.18); }
+    .login .logo-box { width: 190px; height: 190px; margin: 0 auto 28px; }
+    .login h1 { text-align: center; font-size: 34px; }
+    .login .sub { text-align: center; color: var(--muted); font-size: 17px; margin: 8px 0 44px; }
+    .login .input { height: 58px; font-size: 17px; }
+    .row-label { display: flex; justify-content: space-between; align-items: center; }
+    .row-label a { color: var(--blue); font-size: 16px; }
+    .row-label a:hover { text-decoration: underline; }
+    .remember { margin: 6px 0 44px; font-size: 17px; color: #3c4658; }
+    .login .btn-lg { height: 60px; font-size: 18px; }
+    .secure { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 28px; color: var(--muted); }
+    .secure svg { width: 20px; height: 20px; color: var(--orange); }
+    .peek { width: 32px; height: 32px; display: grid; place-items: center; color: #3c4658; }
+    .peek svg { width: 22px; height: 22px; }
+    .err { color: var(--red); font-size: 14px; margin-top: -8px; margin-bottom: 16px; }
+    @media (max-width: 600px) { .login { padding: 40px 22px; border-radius: 20px; } .login .logo-box { width: 140px; height: 140px; } .login h1 { font-size: 28px; } }
+  </style>
+</head>
+<body>
+  <main class="login">
+    <div class="logo-box"><img src="assets/logo.png" alt="SpatiaEstate: Explore. Trust. Own."></div>
+    <h1>Welcome Back</h1>
+    <p class="sub">Access the Prop virtual tour management portal</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label class="label" for="email">Email or Username</label>
+        <div class="input-icon">
+          <span data-icon="mail" style="display:contents"></span>
+          <input id="email" class="input" type="text" placeholder="admin@spatiaestate.com or username" autocomplete="username">
+        </div>
+      </div>
+      <div class="field">
+        <div class="row-label">
+          <label class="label" for="password">Password</label>
+          <a href="#" id="forgot">Forgot Password?</a>
+        </div>
+        <div class="input-icon">
+          <span data-icon="lock" style="display:contents"></span>
+          <input id="password" class="input" type="password" placeholder="••••••••••••" autocomplete="current-password">
+          <button type="button" class="peek trail" id="peek" aria-label="Show password" data-icon="eyeOff"></button>
+        </div>
+      </div>
+      <p class="err hidden" id="err">Enter your email and password to continue.</p>
+      <label class="check remember">
+        <input type="checkbox" checked>
+        <span class="box" data-icon="check"></span>
+        Remember this device for 30 days
+      </label>
+      <button class="btn btn-primary btn-lg" type="submit">Sign In</button>
+      <p class="secure">Secure enterprise connection enabled <span data-icon="shield" style="display:contents"></span></p>
+    </form>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    const pw = document.getElementById('password');
+    document.getElementById('peek').addEventListener('click', (e) => {
+      const show = pw.type === 'password';
+      pw.type = show ? 'text' : 'password';
+      e.currentTarget.innerHTML = icon(show ? 'eye' : 'eyeOff');
+    });
+    document.getElementById('forgot').addEventListener('click', (e) => {
+      e.preventDefault();
+      toast('Reset link sent', 'Check your inbox for password reset instructions.');
+    });
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const ok = document.getElementById('email').value.trim() && pw.value.trim();
+      document.getElementById('err').classList.toggle('hidden', !!ok);
+      if (ok) location.href = 'dashboard.html';
+    });
+  </script>
+</body>
+</html>

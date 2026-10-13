@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reserve Banana Island Penthouse | SpatiaEstate</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    .wrap { max-width: 1440px; margin: 0 auto; padding: 56px 72px 72px; display: grid; grid-template-columns: 1fr 470px; gap: 40px; align-items: start; }
+    .col { display: flex; flex-direction: column; gap: 32px; }
+    .card { border-radius: 22px; padding: 32px; }
+    .hero { width: 100%; aspect-ratio: 1209 / 372; border-radius: 14px; object-fit: cover; margin-bottom: 28px; }
+    .prop-title { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .prop-title h1 { font-size: 30px; }
+    .addr { color: var(--muted); font-size: 17px; margin: 8px 0 26px; }
+    .stats { display: flex; gap: 32px; flex-wrap: wrap; font-size: 17px; }
+    .stats span { display: flex; align-items: center; gap: 8px; }
+    .stats svg { width: 20px; height: 20px; color: var(--orange); }
+    .params { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 26px 0 24px; }
+    .params small { display: block; color: var(--muted); font-size: 13px; letter-spacing: .03em; margin-bottom: 6px; }
+    .params b { font-family: var(--font-head); font-size: 28px; }
+    .params b.faint { color: #9aa6b8; }
+    .notice { background: #fef3c7; color: #b45309; padding: 16px 20px; border-radius: 12px; font-size: 15px; }
+    .processors { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 26px; }
+    .proc { position: relative; border: 1.5px solid var(--border); border-radius: 14px; padding: 22px 56px 22px 22px; cursor: pointer; transition: border-color .15s; }
+    .proc:hover { border-color: var(--border-2); }
+    .proc input { position: absolute; opacity: 0; }
+    .proc b { font-family: var(--font-head); font-size: 18px; display: block; margin-bottom: 8px; }
+    .proc p { color: var(--muted); font-size: 14px; }
+    .proc .radio { position: absolute; top: 22px; right: 22px; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border-2); }
+    .proc:has(input:checked) { border: 2px solid var(--navy); }
+    .proc:has(input:checked) .radio { background: var(--navy); border-color: var(--navy); box-shadow: inset 0 0 0 0 #fff; }
+    .proc input:focus-visible ~ .radio { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+    .summary { position: sticky; top: 104px; padding: 40px; }
+    .summary h2 { font-size: 24px; margin-bottom: 32px; }
+    .sec-label { font-family: var(--font-head); font-weight: 600; font-size: 14px; color: var(--muted); letter-spacing: .03em; margin-bottom: 12px; }
+    .buyer-lines div { margin-bottom: 8px; color: var(--muted); }
+    .buyer-lines div:first-child { color: var(--text); font-size: 17px; }
+    .line { display: flex; justify-content: space-between; color: var(--muted); font-size: 17px; margin-bottom: 14px; }
+    .line b { color: var(--text); font-family: var(--font-head); }
+    .line b.free { color: var(--green); }
+    .rule { border: 0; border-top: 1px solid var(--border); margin: 28px 0; }
+    .total { display: flex; justify-content: space-between; align-items: center; }
+    .total span { font-family: var(--font-head); font-weight: 700; font-size: 20px; }
+    .total b { font-family: var(--font-head); font-size: 28px; color: var(--orange); }
+    .agree { margin: 28px 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
+    .powered { display: flex; align-items: center; gap: 8px; justify-content: center; color: var(--muted); font-size: 13px; margin-top: 18px; }
+    .powered svg { width: 16px; height: 16px; }
+    .spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1100px) { .wrap { grid-template-columns: 1fr; padding: 32px 24px 56px; } .summary { position: static; } }
+    @media (max-width: 640px) {
+      .wrap { padding: 20px 16px 40px; gap: 20px; } .col { gap: 20px; } .card, .summary { padding: 22px; }
+      .prop-title { flex-direction: column; align-items: flex-start; } .prop-title h1 { font-size: 24px; }
+      .params { grid-template-columns: 1fr; } .processors { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="portal-bar">
+    <a href="tour.html" class="logo-box" aria-label="Back to tour"><img src="assets/logo.png" alt=""></a>
+    <div class="title">360° Portal View</div>
+    <div class="listing-pill"><b>LAGOS DIASPORA ELITE LISTING</b><i></i><span>Banana Island Penthouse • Reservation</span></div>
+    <div class="right buyer"><span class="avatar" data-buyer="initials">AO</span><span data-buyer="name">Amaka Obi</span></div>
+  </header>
+
+  <main class="wrap">
+    <div class="col">
+      <section class="card">
+        <img class="hero" src="assets/penthouse.jpg" alt="Banana Island Penthouse living room">
+        <div class="prop-title"><h1>Banana Island Penthouse</h1><span class="badge b-green sm">TITLE VERIFIED</span></div>
+        <p class="addr">Block A, Banana Island, Ikoyi, Lagos, Nigeria</p>
+        <div class="stats">
+          <span data-icon="bed">5 Bedrooms</span>
+          <span data-icon="bath">4 Bathrooms</span>
+          <span data-icon="area">450 sqm</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Reservation Parameters</h3>
+        <div class="params">
+          <div><small>RESERVATION DEPOSIT</small><b>₦5,000,000</b></div>
+          <div><small>EXCLUSIVITY PERIOD</small><b>30 Days</b></div>
+          <div><small>FULL PRICE</small><b class="faint">₦850M</b></div>
+        </div>
+        <div class="notice">Note: The reservation deposit locks this asset exclusively. Refundable within 7 days if direct legal vetting fails.</div>
+      </section>
+
+      <section class="card">
+        <h3>Select Secure Payment Processor</h3>
+        <div class="processors">
+          <label class="proc"><input type="radio" name="proc" value="paystack" checked><b>Paystack Nigeria</b><p>Pay securely with Card, Bank Transfer, or USSD (Local Cards).</p><span class="radio"></span></label>
+          <label class="proc"><input type="radio" name="proc" value="stripe"><b>Stripe International</b><p>Pay using USD / GBP Diaspora wire transfers and foreign credit cards.</p><span class="radio"></span></label>
+        </div>
+      </section>
+    </div>
+
+    <aside class="card summary">
+      <h2>Reservation Order Summary</h2>
+      <div class="sec-label">BUYER DETAILS</div>
+      <div class="buyer-lines"><div data-buyer="name"></div><div data-buyer="email"></div><div data-buyer="phone"></div></div>
+      <hr class="rule">
+      <div class="line">Deposit Amount <b>₦5,000,000</b></div>
+      <div class="line">Legal Escrow Fee <b class="free">FREE</b></div>
+      <hr class="rule">
+      <div class="total"><span>Total Charge</span><b>₦5,000,000</b></div>
+      <label class="check agree">
+        <input type="checkbox" id="agree" checked><span class="box" data-icon="check"></span>
+        <span>I agree to the SpatiaEstate Legal Escrow Terms of Service and authorize the 30-day lock process.</span>
+      </label>
+      <button class="btn btn-primary btn-lg" id="pay">Pay ₦5,000,000 via Paystack</button>
+      <p class="powered"><span data-icon="shieldPlain" style="display:contents"></span>Payment powered by CBN-licensed payment channels.</p>
+    </aside>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/buyer.js"></script>
+  <script>
+    const pay = document.getElementById('pay'), agree = document.getElementById('agree');
+    const label = () => `Pay ₦5,000,000 via ${document.querySelector('[name=proc]:checked').value === 'stripe' ? 'Stripe' : 'Paystack'}`;
+    document.querySelectorAll('[name=proc]').forEach((r) => r.addEventListener('change', () => (pay.textContent = label())));
+    agree.addEventListener('change', () => (pay.disabled = !agree.checked));
+    pay.addEventListener('click', () => {
+      const p = document.querySelector('[name=proc]:checked').value;
+      try { sessionStorage.setItem('spatia-provider', p); } catch (e) { /* ignore */ }
+      pay.disabled = true;
+      pay.innerHTML = '<span class="spinner"></span>Processing payment…';
+      setTimeout(() => (location.href = 'confirmed.html'), 1600);
+    });
+  </script>
+</body>
+</html>

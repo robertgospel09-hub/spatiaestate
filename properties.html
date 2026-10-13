@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create New Property | SpatiaEstate</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .main.flush { padding: 0; }
+    .topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 28px 40px 24px; margin: 0; }
+    .content { padding: 40px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 32px; align-items: start; }
+    .span-6 { grid-column: span 6; } .span-5 { grid-column: span 5; } .span-7 { grid-column: span 7; } .span-12 { grid-column: span 12; }
+    .card h3 { margin-bottom: 22px; }
+    .mini-label { font-family: var(--font-mono); font-size: 12px; color: var(--muted); letter-spacing: .04em; margin-bottom: 12px; display: block; }
+    .media-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 26px; }
+    .media-row .cover { width: 140px; height: 104px; border-radius: 8px; overflow: hidden; }
+    .media-row .thumb { width: 104px; height: 104px; border-radius: 8px; overflow: hidden; position: relative; }
+    .media-row img { width: 100%; height: 100%; object-fit: cover; }
+    .media-row .thumb button.rm { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 50%; background: rgba(12,30,54,.7); color: #fff; display: none; place-items: center; }
+    .media-row .thumb:hover button.rm { display: grid; }
+    .media-row .thumb button.rm svg { width: 12px; height: 12px; }
+    .add-tile { width: 104px; height: 104px; border-radius: 8px; border: 1.5px dashed var(--border-2); display: grid; place-items: center; color: var(--faint); font-size: 32px; font-weight: 300; }
+    .add-tile:hover { border-color: var(--blue); color: var(--blue); }
+    .groups { display: flex; flex-wrap: wrap; gap: 0 18px; }
+    .spheres { display: flex; gap: 18px; flex-wrap: wrap; }
+    .sphere { display: flex; align-items: center; gap: 14px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; transition: border-color .15s; }
+    .sphere:hover { border-color: var(--blue); }
+    .sphere img { width: 66px; height: 46px; border-radius: 4px; object-fit: cover; }
+    .sphere b { font-family: var(--font-head); font-weight: 600; display: block; }
+    .sphere small { font-family: var(--font-mono); color: var(--green); font-size: 12px; }
+    .dropzone { display: block; border: 1.5px dashed var(--border-2); border-radius: 10px; padding: 40px 20px; text-align: center; background: #fbfcfd; cursor: pointer; transition: all .15s; margin-bottom: 26px; }
+    .dropzone.over, .dropzone:hover { border-color: var(--blue); background: var(--blue-soft); }
+    .dropzone svg { width: 26px; height: 26px; color: var(--muted); margin: 0 auto 12px; }
+    .dropzone b { font-family: var(--font-head); font-weight: 600; font-size: 16px; display: block; margin-bottom: 6px; }
+    .doc { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border: 1px solid var(--border); background: var(--bg); border-radius: 10px; margin-bottom: 14px; }
+    .doc > svg { width: 22px; height: 22px; color: var(--blue); flex-shrink: 0; }
+    .doc .meta { flex: 1; min-width: 0; }
+    .doc .meta b { font-family: var(--font-head); font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .doc .meta small { font-family: var(--font-mono); color: var(--muted); font-size: 12px; }
+    .doc .select { width: 240px; height: 44px; background-color: #fff; }
+    .doc .icon-btn { border: 1px solid var(--border); background: #fff; color: var(--muted); }
+    .url-field { position: relative; }
+    .url-field .input { padding-right: 56px; }
+    .url-field button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); }
+    .note { font-size: 13px; color: #3c4658; margin-top: -6px; }
+    @media (max-width: 1200px) { .span-5, .span-6, .span-7 { grid-column: span 12; } }
+    @media (max-width: 900px) {
+      .topbar { padding: 20px 16px; } .content { padding: 20px 16px; gap: 20px; }
+      .doc { flex-wrap: wrap; } .doc .select { width: 100%; order: 3; }
+    }
+  </style>
+</head>
+<body data-page="properties">
+  <div class="app">
+    <div data-sidebar></div>
+    <main class="main flush">
+      <header class="page-head topbar">
+        <div>
+          <div class="crumbs"><a href="dashboard.html">Properties</a><i>/</i><span class="cur">New Listing</span></div>
+          <h1>Create New Property</h1>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-outline" id="saveDraft">Save Draft</button>
+          <button class="btn btn-primary" id="publish" disabled>Publish Property</button>
+          <div data-admin-chip></div>
+        </div>
+      </header>
+
+      <form class="content" id="propForm" onsubmit="return false">
+        <section class="card span-6">
+          <h3>Basic Information</h3>
+          <div class="field">
+            <label class="label" for="title">Property Title</label>
+            <input id="title" class="input" placeholder="e.g. Lekki Phase 1 Luxury Duplex" required>
+          </div>
+          <div class="field">
+            <label class="label" for="desc">Description</label>
+            <textarea id="desc" class="textarea" placeholder="Provide details custom to diaspora expectations..."></textarea>
+          </div>
+          <div class="row-2">
+            <div class="field"><label class="label">Property Type</label>
+              <select class="select"><option>Duplex</option><option>Penthouse</option><option>Villa</option><option>Flat</option><option>Terrace</option></select></div>
+            <div class="field"><label class="label">Listing Type</label>
+              <select class="select"><option>Sale</option><option>Rent</option><option>Lease</option></select></div>
+          </div>
+        </section>
+
+        <section class="card span-6">
+          <h3>Location Settings</h3>
+          <div class="field"><label class="label">Country</label>
+            <select class="select"><option>Nigeria 🇳🇬</option><option>Ghana 🇬🇭</option></select></div>
+          <div class="row-2">
+            <div class="field"><label class="label">State</label>
+              <select class="select" id="state"><option>Lagos</option><option>Abuja (FCT)</option><option>Rivers</option></select></div>
+            <div class="field"><label class="label">City</label>
+              <select class="select" id="city"><option>Lekki</option><option>Ikoyi</option><option>Victoria Island</option><option>Banana Island</option></select></div>
+          </div>
+          <div class="field"><label class="label" for="area">Area / Neighborhood</label>
+            <input id="area" class="input" placeholder="e.g. Phase 1, Near Waterfront"></div>
+        </section>
+
+        <section class="card span-5">
+          <h3>Pricing &amp; Reserve</h3>
+          <div class="field"><label class="label" for="price">Price</label>
+            <input id="price" class="input money" inputmode="numeric" placeholder="₦ 120,000,000"></div>
+          <div class="field"><label class="label">Currency</label>
+            <select class="select" id="currency"><option value="₦">NGN (₦)</option><option value="$">USD ($)</option><option value="£">GBP (£)</option></select></div>
+          <div class="field"><label class="label" for="deposit">Reservation Deposit</label>
+            <input id="deposit" class="input money" inputmode="numeric" placeholder="₦ 5,000,000"></div>
+          <p class="note">* Minimum amount required by buyers to lock reservation.</p>
+        </section>
+
+        <section class="card span-7">
+          <h3>Media Uploads (Tour &amp; Photos)</h3>
+          <div class="groups">
+            <div><span class="mini-label">COVER IMAGE</span><div class="media-row"><div class="cover ph exterior"><img src="assets/exterior.jpg" alt="Cover: duplex exterior"></div></div></div>
+            <div><span class="mini-label">GALLERY PHOTOS</span>
+              <div class="media-row" id="gallery">
+                <div class="thumb"><img src="assets/gallery-1.jpg" alt="Living area"><button class="rm" type="button" aria-label="Remove" data-icon="trash"></button></div>
+                <div class="thumb"><img src="assets/gallery-2.jpg" alt="Bathroom"><button class="rm" type="button" aria-label="Remove" data-icon="trash"></button></div>
+                <label class="add-tile" title="Add photos">+<input type="file" accept="image/*" multiple hidden id="addPhotos"></label>
+              </div>
+            </div>
+          </div>
+          <span class="mini-label">360° PANORAMA SPHERES</span>
+          <div class="spheres">
+            <a class="sphere" href="tour-builder.html?room=living"><img src="assets/living.jpg" alt=""><div><b>Living Room</b><small>Verified Sphere</small></div></a>
+            <a class="sphere" href="tour-builder.html?room=bedroom"><img src="assets/bedroom.jpg" alt=""><div><b>Master Bedroom</b><small>Verified Sphere</small></div></a>
+          </div>
+        </section>
+
+        <section class="card span-12">
+          <h3>Verification Documents</h3>
+          <label class="dropzone" id="drop">
+            <span data-icon="upload" style="display:block"></span>
+            <b>Drag &amp; drop files here</b>
+            <span class="hint">PDF, JPG, PNG (max 10MB)</span>
+            <input type="file" hidden multiple accept=".pdf,.jpg,.jpeg,.png" id="docInput">
+          </label>
+          <div id="docs"></div>
+        </section>
+
+        <section class="card span-12">
+          <h3>Publishing Settings</h3>
+          <div class="toggle-row"><div><h4>Enable AI Assistant</h4><p>Allow buyers to ask property-specific questions.</p></div>
+            <label class="toggle"><input type="checkbox" checked><span></span></label></div>
+          <div class="toggle-row"><div><h4>Enable Reservation Deposits</h4><p>Allow buyers to initiate deposit payments.</p></div>
+            <label class="toggle"><input type="checkbox" checked><span></span></label></div>
+          <div class="field"><label class="label">Public URL</label>
+            <div class="url-field">
+              <input class="input" id="url" readonly value="spatiaestate.com/p/lekki-phase-1-luxury-duplex">
+              <button type="button" class="icon-btn" id="copyUrl" aria-label="Copy URL" data-icon="copy"></button>
+            </div>
+          </div>
+        </section>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const DOC_TYPES = ['Title Document', 'Survey Plan', 'Governor\'s Consent', 'Building Approval', 'Deed of Assignment'];
+    const docs = [{ name: 'Certificate of Occupancy.pdf', size: '2.4 MB', type: 'Title Document' }, { name: 'Survey Plan.pdf', size: '1.8 MB', type: 'Survey Plan' }];
+
+    function renderDocs() {
+      $('docs').innerHTML = docs.map((d, i) => `
+        <div class="doc">${icon('file')}
+          <div class="meta"><b>${d.name}</b><small>${d.size}</small></div>
+          <select class="select" aria-label="Document type">${DOC_TYPES.map((t) => `<option ${t === d.type ? 'selected' : ''}>${t}</option>`).join('')}</select>
+          <button type="button" class="icon-btn" data-rm="${i}" aria-label="Remove ${d.name}">${icon('trash')}</button>
+        </div>`).join('');
+    }
+    renderDocs();
+    $('docs').addEventListener('click', (e) => { const b = e.target.closest('[data-rm]'); if (b) { docs.splice(+b.dataset.rm, 1); renderDocs(); } });
+
+    const addFiles = (files) => {
+      [...files].forEach((f) => docs.push({ name: f.name, size: (f.size / 1048576).toFixed(1) + ' MB', type: DOC_TYPES[0] }));
+      renderDocs();
+    };
+    $('docInput').addEventListener('change', (e) => addFiles(e.target.files));
+    const drop = $('drop');
+    ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+    ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('over'); }));
+    drop.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
+
+    // Gallery
+    $('gallery').addEventListener('click', (e) => { const b = e.target.closest('.rm'); if (b) b.parentElement.remove(); });
+    $('addPhotos').addEventListener('change', (e) => {
+      [...e.target.files].forEach((f) => {
+        const t = document.createElement('div'); t.className = 'thumb';
+        t.innerHTML = `<img src="${URL.createObjectURL(f)}" alt=""><button class="rm" type="button" aria-label="Remove">${icon('trash')}</button>`;
+        e.target.parentElement.before(t);
+      });
+    });
+
+    // Money formatting
+    const sym = () => $('currency').value;
+    document.querySelectorAll('.money').forEach((inp) => inp.addEventListener('input', () => {
+      const n = inp.value.replace(/\D/g, '');
+      inp.value = n ? `${sym()} ${(+n).toLocaleString('en-US')}` : '';
+    }));
+    $('currency').addEventListener('change', () => document.querySelectorAll('.money').forEach((inp) => inp.dispatchEvent(new Event('input'))));
+
+    // Slug + publish state
+    const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    $('title').addEventListener('input', () => {
+      const t = $('title').value.trim();
+      $('url').value = 'spatiaestate.com/p/' + (slug(t) || 'lekki-phase-1-luxury-duplex');
+      $('publish').disabled = !t;
+    });
+    $('copyUrl').addEventListener('click', () => {
+      navigator.clipboard?.writeText('https://' + $('url').value);
+      toast('Link copied', 'The public URL is on your clipboard.');
+    });
+    $('saveDraft').addEventListener('click', () => toast('Draft saved', 'You can return to this listing any time.'));
+    $('publish').addEventListener('click', () => {
+      toast('Property published', 'Opening the tour builder for this listing.');
+      setTimeout(() => (location.href = 'tour-builder.html'), 1200);
+    });
+  </script>
+</body>
+</html>

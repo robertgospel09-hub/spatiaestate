@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Payment Management | SpatiaEstate</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .ref { font-family: var(--font-mono); color: #3c4658; white-space: nowrap; }
+    .kpi-sub { color: var(--muted); }
+    .detail div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .detail div:last-child { border: 0; }
+    .detail span { color: var(--muted); }
+    .detail b { font-family: var(--font-head); font-weight: 600; text-align: right; }
+  </style>
+</head>
+<body data-page="payments">
+  <div class="app">
+    <div data-sidebar></div>
+    <main class="main">
+      <header class="page-head">
+        <div>
+          <h1>Payment Management</h1>
+          <p>Monitor client reservation deposits, processing partners, and transfer histories.</p>
+        </div>
+        <div class="head-actions"><div data-admin-chip></div></div>
+      </header>
+
+      <section class="kpis">
+        <div class="kpi"><div class="kpi-top"><span class="kpi-label">Total Revenue</span><span class="kpi-icon" data-icon="card"></span></div><div class="kpi-value">₦12.4M</div><div class="kpi-sub">Processed live</div></div>
+        <div class="kpi"><div class="kpi-top"><span class="kpi-label">Pending Deposits</span><span class="kpi-icon" data-icon="clock"></span></div><div class="kpi-value">₦2.1M</div><div class="kpi-sub">Awaiting confirmation</div></div>
+        <div class="kpi"><div class="kpi-top"><span class="kpi-label">Successful Transfers</span><span class="kpi-icon" data-icon="checkCircle"></span></div><div class="kpi-value">₦9.8M</div><div class="kpi-sub">Settled to developer bank</div></div>
+        <div class="kpi"><div class="kpi-top"><span class="kpi-label">Failed Attempts</span><span class="kpi-icon" data-icon="xCircle"></span></div><div class="kpi-value">₦520K</div><div class="kpi-sub">Card / gateway decline</div></div>
+      </section>
+
+      <section class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Reference</th><th>Buyer</th><th>Property</th><th>Amount</th><th>Currency</th><th>Provider</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div class="table-foot">
+          <span>Showing 1-7 of 98 transactions</span>
+          <div class="pager"><button class="btn btn-outline btn-sm" disabled>Previous</button><button class="btn btn-outline btn-sm" id="next">Next</button></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="overlay" id="txModal">
+    <div class="modal" style="max-width:520px">
+      <div class="modal-head"><div><h2 style="font-size:24px" id="txRef"></h2><p>Transaction details</p></div><button class="close-btn" data-close aria-label="Close" data-icon="xCircle"></button></div>
+      <div class="detail" id="txBody"></div>
+      <div style="display:flex;gap:12px;margin-top:24px">
+        <a class="btn btn-primary" href="receipt.html" data-icon="printer">Print Receipt</a>
+        <button class="btn btn-outline" data-close>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/data.js"></script>
+  <script>
+    const P = DATA.payments;
+    document.getElementById('rows').innerHTML = P.map((p, i) => `
+      <tr>
+        <td class="ref">${p.ref}</td>
+        <td class="t-strong" style="white-space:nowrap">${p.buyer}</td>
+        <td class="t-strong">${p.property}</td>
+        <td class="t-strong" style="white-space:nowrap">${p.amount}</td>
+        <td style="color:var(--muted)">${p.cur}</td>
+        <td>${badge(p.provider.toUpperCase(), TONES.provider[p.provider], 'sm')}</td>
+        <td>${badge(p.status.toUpperCase(), TONES.pay[p.status], 'sm')}</td>
+        <td class="t-muted">${p.date}</td>
+        <td><div class="actions">
+          <button class="icon-btn" data-view="${i}" aria-label="View ${p.ref}">${icon('eye')}</button>
+          <a class="icon-btn" href="receipt.html" aria-label="Print receipt for ${p.ref}">${icon('printer')}</a>
+        </div></td>
+      </tr>`).join('');
+
+    document.getElementById('rows').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-view]'); if (!b) return;
+      const p = P[+b.dataset.view];
+      document.getElementById('txRef').textContent = p.ref;
+      document.getElementById('txBody').innerHTML = [
+        ['Buyer', p.buyer], ['Property', p.property], ['Amount', `${p.amount} ${p.cur}`],
+        ['Provider', p.provider], ['Status', badge(p.status.toUpperCase(), TONES.pay[p.status], 'sm')], ['Date', p.date],
+      ].map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('');
+      openModal('txModal');
+    });
+    document.getElementById('next').addEventListener('click', () => toast('End of demo data', 'Connect your payment gateway to load all 98 transactions.'));
+  </script>
+</body>
+</html>

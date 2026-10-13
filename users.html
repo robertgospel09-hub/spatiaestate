@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User Management | SpatiaEstate</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .roles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; margin-bottom: 32px; }
+    .role-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .role-card small { font-family: var(--font-head); font-weight: 600; color: #3c4658; font-size: 15px; }
+    .role-card b { display: block; font-family: var(--font-head); font-size: 22px; margin-top: 2px; }
+    .role-card i { width: 14px; height: 14px; border-radius: 50%; }
+    .user-avatar { width: 38px; height: 38px; font-size: 12px; }
+    .profile-card { display: flex; align-items: center; gap: 18px; background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 22px; margin-bottom: 26px; }
+    .profile-card .avatar { width: 72px; height: 72px; font-size: 22px; background: #e0e7ff; color: #4338ca; border: 2px solid #c7d2fe; }
+    .profile-card b { font-family: var(--font-head); font-size: 20px; display: block; margin-bottom: 6px; }
+    .access { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 22px; }
+    .access h4 { font-size: 15px; font-weight: 600; color: #3c4658; }
+    .access .status { margin-top: 4px; font-size: 16px; }
+    .audit { background: #f9f9f8; border-radius: 12px; padding: 20px 22px; font-size: 14px; color: var(--muted); margin-bottom: 30px; }
+    .audit div { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .audit div:last-child { margin: 0; }
+    .audit b { font-family: var(--font-mono); color: var(--text); font-weight: 500; }
+    .audit b.name { font-family: var(--font-head); font-weight: 600; }
+    .modal-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    .modal-actions .link-danger { margin-left: auto; }
+    .modal .field { gap: 8px; }
+    .confirm { text-align: center; max-width: 460px; }
+    .confirm .warn { width: 64px; height: 64px; border-radius: 50%; background: var(--red-soft); color: #ef4444; display: grid; place-items: center; margin: 0 auto 20px; }
+    .confirm .warn svg { width: 28px; height: 28px; }
+    .confirm h2 { font-size: 24px; } .confirm p { color: var(--muted); margin: 10px 0 26px; line-height: 1.5; }
+    .confirm .row-2 { gap: 14px; }
+    @media (max-width: 1200px) { .roles { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px) { .roles { grid-template-columns: 1fr 1fr; } .modal-actions .link-danger { margin-left: 0; } }
+  </style>
+</head>
+<body data-page="users">
+  <div class="app">
+    <div data-sidebar></div>
+    <main class="main">
+      <header class="page-head">
+        <div>
+          <h1>User Management</h1>
+          <p>Provision systems access and maintain team roles across departments.</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-primary" id="addUser" data-icon="plus">Add New User</button>
+          <div data-admin-chip></div>
+        </div>
+      </header>
+
+      <section class="roles" id="roles"></section>
+
+      <section class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Organization</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div class="table-foot">
+          <span id="count"></span>
+          <div class="pager"><button class="btn btn-outline btn-sm" disabled>Previous</button><button class="btn btn-outline btn-sm" disabled>Next</button></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Edit / add user -->
+  <div class="overlay" id="userModal">
+    <div class="modal" style="max-width:720px">
+      <div class="modal-head"><h2 id="mTitle">Edit User Profile</h2><button class="close-btn" data-close aria-label="Close" data-icon="xCircle"></button></div>
+      <div class="profile-card"><span class="avatar" id="mInit">AO</span><div><b id="mName">Amaka Obi</b><span id="mRole"></span></div></div>
+      <form id="userForm" novalidate>
+        <div class="field"><label class="label plain" for="uName">Full Name</label><input id="uName" class="input white" required></div>
+        <div class="field"><label class="label plain" for="uEmail">Email Address</label><input id="uEmail" type="email" class="input white" required></div>
+        <div class="row-2">
+          <div class="field"><label class="label plain" for="uRole">Role</label><select id="uRole" class="select white"><option>Super Admin</option><option>Org Admin</option><option>Agent</option><option>Support</option><option>Viewer</option></select></div>
+          <div class="field"><label class="label plain" for="uOrg">Organization</label><select id="uOrg" class="select white"><option>SpatiaEstate HQ</option><option>SpatiaEstate Lagos</option><option>SpatiaEstate Abuja</option><option>SpatiaEstate USA</option><option>SpatiaEstate Support</option><option>SpatiaEstate Investments</option></select></div>
+        </div>
+        <div class="access">
+          <div><h4>Account Access Status</h4><div class="status" id="uStatusText"></div></div>
+          <label class="toggle green"><input type="checkbox" id="uActive"><span></span></label>
+        </div>
+        <div class="audit" id="audit">
+          <div>Last Login: <b id="aLogin"></b></div>
+          <div>Date Added: <b id="aAdded"></b></div>
+          <div>Added By: <b class="name" id="aBy"></b></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" type="submit" id="mSave">Save Changes</button>
+          <button class="btn btn-outline" type="button" id="resetPw">Reset Password</button>
+          <button class="link-danger" type="button" id="deactivate">Deactivate User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete confirm -->
+  <div class="overlay" id="delModal">
+    <div class="modal confirm">
+      <div class="warn" data-icon="trash"></div>
+      <h2>Remove team member?</h2>
+      <p id="delText"></p>
+      <div class="row-2"><button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-danger" id="delYes">Yes, Remove</button></div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/data.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const U = DATA.users;
+    const ROLE_CARDS = [['Super Admins', 'Super Admin', '#0c1e36'], ['Org Admins', 'Org Admin', '#2563eb'], ['Agents', 'Agent', '#15803d'], ['Support Team', 'Support', '#d97706'], ['Viewers', 'Viewer', '#475569']];
+    let editing = null, deleting = null;
+    const statusHtml = (s) => `<span class="status"><span class="dot" style="background:${TONES.userStatus[s]}"></span>${s}</span>`;
+
+    function render() {
+      $('roles').innerHTML = ROLE_CARDS.map(([label, role, c]) => {
+        const n = U.filter((u) => u.role === role).length;
+        return `<div class="role-card"><div><small>${label}</small><b>${n} User${n === 1 ? '' : 's'}</b></div><i style="background:${c}"></i></div>`;
+      }).join('');
+      $('rows').innerHTML = U.map((u, i) => `
+        <tr>
+          <td><div class="person"><span class="avatar user-avatar">${initials(u.name)}</span><span class="t-strong" style="white-space:nowrap">${u.name}</span></div></td>
+          <td style="color:var(--muted)">${u.email}</td>
+          <td>${badge(u.role.toUpperCase(), TONES.role[u.role], 'sm')}</td>
+          <td class="t-strong" style="font-weight:500;white-space:nowrap">${u.org}</td>
+          <td>${statusHtml(u.status)}</td>
+          <td class="t-muted">${u.login}</td>
+          <td><div class="actions">
+            <button class="icon-btn" data-edit="${i}" aria-label="Edit ${u.name}">${icon('pencil')}</button>
+            <button class="icon-btn danger" data-del="${i}" aria-label="Remove ${u.name}">${icon('trash')}</button>
+          </div></td>
+        </tr>`).join('');
+      $('count').textContent = `Showing 1-${U.length} of ${U.length} team members`;
+    }
+
+    function setStatusText(active, base) {
+      const s = active ? 'Active' : base === 'Pending' ? 'Pending' : 'Inactive';
+      $('uStatusText').innerHTML = statusHtml(s);
+      $('deactivate').textContent = active ? 'Deactivate User' : 'Activate User';
+    }
+
+    function openUser(i) {
+      editing = i;
+      const isNew = i === null;
+      const u = isNew ? { name: '', email: '', role: 'Agent', org: 'SpatiaEstate Lagos', status: 'Pending', login: 'Never', added: 'Today', by: 'Chidi Okafor' } : U[i];
+      $('mTitle').textContent = isNew ? 'Add New User' : 'Edit User Profile';
+      $('mInit').textContent = isNew ? '+' : initials(u.name);
+      $('mName').textContent = isNew ? 'New team member' : u.name;
+      $('mRole').innerHTML = badge(u.role.toUpperCase(), TONES.role[u.role], 'sm');
+      $('uName').value = u.name; $('uEmail').value = u.email; $('uRole').value = u.role; $('uOrg').value = u.org;
+      $('uActive').checked = u.status === 'Active';
+      $('uActive').dataset.base = u.status;
+      setStatusText($('uActive').checked, u.status);
+      $('aLogin').textContent = u.login; $('aAdded').textContent = u.added; $('aBy').textContent = u.by;
+      $('audit').classList.toggle('hidden', isNew);
+      $('resetPw').classList.toggle('hidden', isNew);
+      $('deactivate').classList.toggle('hidden', isNew);
+      $('mSave').textContent = isNew ? 'Send Invite' : 'Save Changes';
+      openModal('userModal');
+    }
+
+    $('uName').addEventListener('input', (e) => { $('mName').textContent = e.target.value || 'New team member'; $('mInit').textContent = e.target.value ? initials(e.target.value) : '+'; });
+    $('uRole').addEventListener('change', (e) => ($('mRole').innerHTML = badge(e.target.value.toUpperCase(), TONES.role[e.target.value], 'sm')));
+    $('uActive').addEventListener('change', (e) => setStatusText(e.target.checked, e.target.dataset.base));
+    $('deactivate').addEventListener('click', () => { $('uActive').checked = !$('uActive').checked; setStatusText($('uActive').checked, $('uActive').dataset.base); });
+    $('resetPw').addEventListener('click', () => toast('Password reset sent', `A reset link was emailed to ${$('uEmail').value}.`));
+
+    $('userForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!$('uName').value.trim() || !$('uEmail').checkValidity() || !$('uEmail').value) return toast('Missing details', 'Add a full name and a valid email address.');
+      const base = $('uActive').dataset.base;
+      const data = { name: $('uName').value.trim(), email: $('uEmail').value.trim(), role: $('uRole').value, org: $('uOrg').value,
+        status: $('uActive').checked ? 'Active' : base === 'Pending' ? 'Pending' : 'Inactive' };
+      if (editing === null) U.push(Object.assign({ login: 'Never', added: 'Today', by: 'Chidi Okafor' }, data, { status: 'Pending' }));
+      else Object.assign(U[editing], data);
+      closeModal('userModal'); render();
+      toast(editing === null ? 'Invite sent' : 'User updated', editing === null ? `${data.name} will get an email to set up access.` : 'Your changes have been saved successfully.');
+    });
+
+    $('rows').addEventListener('click', (e) => {
+      const ed = e.target.closest('[data-edit]'); if (ed) return openUser(+ed.dataset.edit);
+      const d = e.target.closest('[data-del]');
+      if (d) { deleting = +d.dataset.del; $('delText').textContent = `${U[deleting].name} will lose access to SpatiaEstate immediately. This cannot be undone.`; openModal('delModal'); }
+    });
+    $('delYes').addEventListener('click', () => { const n = U[deleting].name; U.splice(deleting, 1); closeModal('delModal'); render(); toast('User removed', `${n} no longer has access.`); });
+    $('addUser').addEventListener('click', () => openUser(null));
+    render();
+  </script>
+</body>
+</html>

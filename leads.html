@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lead Management | SpatiaEstate</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .filters { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; margin-bottom: 32px; }
+    .filters .field { margin: 0; gap: 8px; }
+    .filters .label { font-size: 13px; }
+    .filters .select { background-color: #fff; }
+    td .check, th .check { vertical-align: middle; }
+    .lead-avatar { width: 38px; height: 38px; font-size: 12px; }
+    .empty-row td { text-align: center; color: var(--muted); padding: 48px; }
+    tr.sel td { background: #f5f8ff; }
+    @media (max-width: 1200px) { .filters { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px) { .filters { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body data-page="leads">
+  <div class="app">
+    <div data-sidebar></div>
+    <main class="main">
+      <header class="page-head">
+        <div>
+          <h1>Lead Management</h1>
+          <p>Track real estate interactions with local and diaspora buyers.</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-outline" id="export" data-icon="download">Export CSV</button>
+          <div data-admin-chip></div>
+        </div>
+      </header>
+
+      <section class="filters">
+        <div class="field"><label class="label" for="fProp">Property</label><select class="select" id="fProp"><option value="">All Properties</option></select></div>
+        <div class="field"><label class="label" for="fStatus">Status</label><select class="select" id="fStatus"><option value="">All Statuses</option></select></div>
+        <div class="field"><label class="label" for="fIntent">Intent</label><select class="select" id="fIntent"><option value="">All Intents</option></select></div>
+        <div class="field"><label class="label" for="fCountry">Country</label><select class="select" id="fCountry"><option value="">All Countries</option></select></div>
+        <div class="field"><label class="label" for="fDate">Date Range</label><select class="select" id="fDate"><option>Last 30 Days</option><option>Last 7 Days</option><option>Last 90 Days</option><option>All Time</option></select></div>
+      </section>
+
+      <section class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th style="width:44px"><label class="check" aria-label="Select all"><input type="checkbox" id="all"><span class="box" data-icon="check"></span></label></th>
+              <th>Buyer Name</th><th>Email / Phone</th><th>Country</th><th>Property Interest</th><th>Intent</th><th>Status</th><th class="t-right">Date</th>
+            </tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div class="table-foot">
+          <span id="count"></span>
+          <div class="pager"><button class="btn btn-outline btn-sm" id="prev" disabled>Previous</button><button class="btn btn-outline btn-sm" id="next">Next</button></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/data.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const L = DATA.leads;
+    const uniq = (k) => [...new Set(L.map((l) => l[k]))];
+    [['fProp', 'property'], ['fStatus', 'status'], ['fIntent', 'intent'], ['fCountry', 'country']].forEach(([id, k]) =>
+      $(id).insertAdjacentHTML('beforeend', uniq(k).map((v) => `<option>${v}</option>`).join('')));
+
+    let shown = L;
+    function render() {
+      const f = { property: $('fProp').value, status: $('fStatus').value, intent: $('fIntent').value, country: $('fCountry').value };
+      shown = L.filter((l) => Object.entries(f).every(([k, v]) => !v || l[k] === v));
+      const filtered = Object.values(f).some(Boolean);
+      $('rows').innerHTML = shown.length ? shown.map((l, i) => `
+        <tr>
+          <td><label class="check" aria-label="Select ${l.name}"><input type="checkbox" class="rowchk" data-i="${i}"><span class="box">${icon('check')}</span></label></td>
+          <td><div class="person"><span class="avatar lead-avatar">${initials(l.name)}</span><span class="t-strong" style="white-space:nowrap">${l.name}</span></div></td>
+          <td><div>${l.email}</div><div class="t-sub">${l.phone}</div></td>
+          <td style="white-space:nowrap;color:var(--muted)">${l.country} ${l.flag}</td>
+          <td class="t-strong">${l.property}</td>
+          <td>${badge(l.intent.toUpperCase(), TONES.intent[l.intent], 'sm')}</td>
+          <td>${badge(l.status.toUpperCase(), TONES.status[l.status], 'sm')}</td>
+          <td class="t-right t-muted">${l.date.replace(', ', ',<br>')}</td>
+        </tr>`).join('') : '<tr class="empty-row"><td colspan="8">No leads match these filters.</td></tr>';
+      $('count').textContent = filtered ? `Showing ${shown.length} matching lead${shown.length === 1 ? '' : 's'}` : 'Showing 1-8 of 142 leads';
+      $('all').checked = false;
+    }
+    ['fProp', 'fStatus', 'fIntent', 'fCountry', 'fDate'].forEach((id) => $(id).addEventListener('change', render));
+    render();
+
+    $('all').addEventListener('change', (e) => document.querySelectorAll('.rowchk').forEach((c) => { c.checked = e.target.checked; c.closest('tr').classList.toggle('sel', c.checked); }));
+    $('rows').addEventListener('change', (e) => { if (e.target.classList.contains('rowchk')) e.target.closest('tr').classList.toggle('sel', e.target.checked); });
+
+    $('export').addEventListener('click', () => {
+      const picked = [...document.querySelectorAll('.rowchk:checked')].map((c) => shown[+c.dataset.i]);
+      const rows = picked.length ? picked : shown;
+      const cols = ['name', 'email', 'phone', 'country', 'property', 'intent', 'status', 'date'];
+      const csv = [cols.join(','), ...rows.map((r) => cols.map((c) => `"${String(r[c]).replace(/"/g, '""')}"`).join(','))].join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+      a.download = 'spatiaestate-leads.csv'; a.click();
+      toast('Export ready', `${rows.length} lead${rows.length === 1 ? '' : 's'} downloaded as CSV.`);
+    });
+    $('next').addEventListener('click', () => toast('End of demo data', 'Connect your database to page through all 142 leads.'));
+  </script>
+</body>
+</html>
