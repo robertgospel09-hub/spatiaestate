@@ -3,86 +3,349 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sign In | SpatiaEstate</title>
+  <title>SpatiaEstate | Explore. Trust. Own.</title>
+  <meta name="description" content="Turn your properties into browser-native 360° virtual tours. One link. One tour. One conversion.">
   <link rel="icon" href="assets/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <style>
-    body { background: #4a5568; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
-    .login { background: #fff; width: 100%; max-width: 680px; border-radius: 28px; padding: 64px 68px 56px; box-shadow: 0 30px 60px rgba(0,0,0,.18); }
-    .login .logo-box { width: 190px; height: 190px; margin: 0 auto 28px; }
-    .login h1 { text-align: center; font-size: 34px; }
-    .login .sub { text-align: center; color: var(--muted); font-size: 17px; margin: 8px 0 44px; }
-    .login .input { height: 58px; font-size: 17px; }
-    .row-label { display: flex; justify-content: space-between; align-items: center; }
-    .row-label a { color: var(--blue); font-size: 16px; }
-    .row-label a:hover { text-decoration: underline; }
-    .remember { margin: 6px 0 44px; font-size: 17px; color: #3c4658; }
-    .login .btn-lg { height: 60px; font-size: 18px; }
-    .secure { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 28px; color: var(--muted); }
-    .secure svg { width: 20px; height: 20px; color: var(--orange); }
-    .peek { width: 32px; height: 32px; display: grid; place-items: center; color: #3c4658; }
-    .peek svg { width: 22px; height: 22px; }
-    .err { color: var(--red); font-size: 14px; margin-top: -8px; margin-bottom: 16px; }
-    @media (max-width: 600px) { .login { padding: 40px 22px; border-radius: 20px; } .login .logo-box { width: 140px; height: 140px; } .login h1 { font-size: 28px; } }
+    html { scroll-behavior: smooth; }
+    body { background: #fff; }
+    .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+    section[id] { scroll-margin-top: 80px; }
+
+    /* Nav */
+    .nav-top { position: sticky; top: 0; z-index: 30; background: rgba(255,255,255,.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .nav-top .container { display: flex; align-items: center; height: 68px; gap: 24px; }
+    .nav-top .logo-box { width: 42px; height: 42px; }
+    .links { display: flex; gap: 36px; margin: 0 auto; }
+    .links a { font-family: var(--font-head); font-weight: 500; font-size: 15px; color: #3c4658; }
+    .links a:hover { color: var(--navy); }
+    .nav-cta { display: flex; align-items: center; gap: 20px; }
+    .nav-cta .login { font-family: var(--font-head); font-weight: 600; }
+    .nav-cta .btn { height: 42px; }
+    .burger { display: none; width: 40px; height: 40px; place-items: center; margin-left: auto; }
+    .burger svg { width: 24px; height: 24px; }
+    .mobile-menu { display: none; }
+
+    /* Hero */
+    .hero { background: var(--bg); padding: 72px 0 96px; text-align: center; overflow: hidden; }
+    .pill { display: inline-block; background: var(--green-soft); color: var(--green); font-family: var(--font-head); font-weight: 600; font-size: 12px; letter-spacing: .03em; padding: 6px 14px; border-radius: 999px; }
+    .hero h1 { font-size: clamp(40px, 7vw, 76px); font-weight: 800; letter-spacing: -0.02em; margin: 18px 0 18px; line-height: 1.05; }
+    .hero p.lead { max-width: 600px; margin: 0 auto; color: var(--muted); font-size: 17px; line-height: 1.6; }
+    .hero-ctas { display: flex; gap: 14px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
+    .hero-ctas .btn-outline { border: 1.5px solid var(--navy); }
+
+    .devices { position: relative; max-width: 820px; margin: 80px auto 0; padding-right: 100px; }
+    .tablet { background: var(--navy); border-radius: 20px; padding: 10px; box-shadow: 0 30px 60px rgba(12,30,54,.22); }
+    .tablet-screen { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 1074 / 776; cursor: grab; touch-action: pan-y; }
+    .tablet-screen.dragging { cursor: grabbing; }
+    .tablet-screen img { position: absolute; top: 0; left: 0; height: 100%; width: 125%; max-width: none; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+    .nav-chip { position: absolute; top: 4%; left: 3.5%; display: flex; align-items: center; gap: 8px; background: rgba(60,60,60,.72); color: #fff; padding: 7px 14px 7px 9px; border-radius: 999px; font-family: var(--font-head); font-weight: 600; font-size: 13px; backdrop-filter: blur(6px); }
+    .nav-chip svg { width: 18px; height: 18px; }
+    .villa-card { position: absolute; left: 3.5%; bottom: 4%; background: rgba(40,40,40,.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; padding: 14px 20px; border-radius: 10px; text-align: left; }
+    .villa-card b { font-family: var(--font-head); font-size: 17px; display: block; }
+    .villa-card span { font-size: 13px; color: #d2d6dc; }
+    .phone { position: absolute; right: 0; top: -24px; width: 230px; background: var(--navy); border-radius: 30px; padding: 8px; box-shadow: 0 30px 60px rgba(12,30,54,.3); text-align: left; animation: float 6s ease-in-out infinite; }
+    .phone-in { background: #fff; border-radius: 23px; overflow: hidden; }
+    .phone img { width: 100%; aspect-ratio: 454 / 496; object-fit: cover; }
+    .phone-body { padding: 14px 16px 16px; }
+    .phone-body b { font-family: var(--font-head); font-size: 15px; display: block; }
+    .phone-body small { display: block; font-size: 11.5px; color: var(--muted); margin: 6px 0 12px; }
+    .phone-body small em { font-style: normal; color: var(--green); }
+    .phone-body .btn { height: 38px; width: 100%; font-size: 13px; }
+    @keyframes float { 50% { transform: translateY(-10px); } }
+    @media (prefers-reduced-motion: reduce) { .phone { animation: none; } html { scroll-behavior: auto; } }
+
+    /* Logos */
+    .trusted { padding: 48px 0; border-bottom: 1px solid var(--border); text-align: center; }
+    .trusted small { font-family: var(--font-head); font-weight: 500; font-size: 12px; letter-spacing: .04em; color: var(--faint); }
+    .logos { display: flex; justify-content: center; gap: 56px; margin-top: 22px; flex-wrap: wrap; }
+    .logos span { font-family: var(--font-head); font-weight: 700; font-size: 18px; color: var(--navy); opacity: .9; }
+
+    /* Sections */
+    .section { padding: 96px 0; }
+    .section.alt { background: var(--bg); }
+    .sec-head { text-align: center; max-width: 620px; margin: 0 auto 52px; }
+    .sec-head h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.2; }
+    .sec-head p { color: var(--muted); margin-top: 12px; }
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .feature { border: 1px solid var(--border); border-radius: 14px; padding: 28px; background: #fff; transition: transform .2s, box-shadow .2s; }
+    .feature:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(12,30,54,.08); }
+    .feature .ic { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); display: grid; place-items: center; margin-bottom: 20px; }
+    .feature .ic svg { width: 20px; height: 20px; }
+    .feature h3 { font-size: 19px; margin-bottom: 10px; }
+    .feature p { color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+    .step { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 30px 22px; text-align: center; }
+    .step i { width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: #fff; font-style: normal; font-family: var(--font-head); font-weight: 700; display: grid; place-items: center; margin: 0 auto 18px; }
+    .step h3 { font-size: 17px; margin-bottom: 8px; }
+    .step p { color: var(--muted); font-size: 14px; line-height: 1.55; }
+
+    .stats { background: var(--navy); color: #fff; padding: 72px 0; }
+    .stats .container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
+    .stats b { font-family: var(--font-head); font-size: clamp(32px, 4vw, 44px); font-weight: 700; display: block; }
+    .stats span { font-family: var(--font-head); font-size: 13px; letter-spacing: .04em; color: #c9d1de; }
+
+    .quote { max-width: 820px; margin: 0 auto; background: var(--bg); border: 1px solid var(--border); border-radius: 22px; padding: 56px 64px; text-align: center; }
+    .quote svg { width: 36px; height: 36px; color: #c6cfdc; margin: 0 auto 24px; }
+    .quote blockquote { font-family: var(--font-head); font-weight: 600; font-size: clamp(18px, 2.4vw, 23px); line-height: 1.5; }
+    .who { display: inline-flex; align-items: center; gap: 14px; margin-top: 30px; text-align: left; }
+    .who img { width: 50px; height: 50px; border-radius: 50%; }
+    .who b { font-family: var(--font-head); display: block; }
+    .who span { color: var(--muted); font-size: 13px; }
+
+    .cta { text-align: center; }
+    .cta h2 { font-size: clamp(28px, 4vw, 40px); }
+    .cta p { color: var(--muted); margin: 12px 0 28px; }
+    .cta small { display: block; color: var(--faint); font-size: 12px; margin-top: 16px; }
+
+    footer { background: var(--navy); color: #c9d1de; padding: 72px 0 32px; }
+    .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+    footer .logo-box { width: 64px; height: 64px; margin-bottom: 20px; }
+    footer p { max-width: 380px; line-height: 1.6; font-size: 14.5px; }
+    footer h4 { color: #fff; font-size: 15px; margin-bottom: 18px; }
+    footer ul { list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 14.5px; }
+    footer ul a:hover { color: #fff; }
+    .foot-bot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,.1); margin-top: 56px; padding-top: 28px; font-size: 13px; }
+    .social { display: flex; gap: 18px; }
+    .social a { color: #c9d1de; } .social a:hover { color: #fff; }
+    .social svg { width: 20px; height: 20px; }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    @media (max-width: 960px) {
+      .links, .nav-cta { display: none; }
+      .burger { display: grid; }
+      .mobile-menu { display: block; position: fixed; inset: 68px 0 auto 0; background: #fff; border-bottom: 1px solid var(--border); padding: 12px 24px 24px; transform: translateY(-120%); visibility: hidden; transition: transform .25s, visibility .25s; z-index: 25; box-shadow: 0 20px 40px rgba(12,30,54,.08); }
+      .mobile-menu.open { transform: none; visibility: visible; }
+      .mobile-menu a { display: block; padding: 14px 0; font-family: var(--font-head); font-weight: 600; font-size: 17px; border-bottom: 1px solid var(--border); }
+      .mobile-menu .btn { display: flex; margin-top: 18px; width: 100%; color: #fff; border: 0; }
+      .features { grid-template-columns: 1fr 1fr; }
+      .steps, .stats .container { grid-template-columns: 1fr 1fr; }
+      .stats .container { row-gap: 40px; }
+      .foot-grid { grid-template-columns: 1fr 1fr 1fr; }
+      .foot-grid > div:first-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 640px) {
+      .container { padding: 0 16px; }
+      .hero { padding: 48px 0 64px; }
+      .devices { padding-right: 0; margin-top: 48px; }
+      .phone { position: relative; top: auto; width: 180px; margin: -24px 8px 0 auto; }
+      .villa-card { padding: 8px 12px; } .villa-card b { font-size: 13px; } .villa-card span { font-size: 11px; }
+      .nav-chip { font-size: 11px; padding: 5px 10px 5px 7px; }
+      .section { padding: 64px 0; }
+      .features, .steps { grid-template-columns: 1fr; }
+      .logos { gap: 18px 32px; } .logos span { font-size: 15px; }
+      .quote { padding: 36px 22px; }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .foot-bot { flex-direction: column; gap: 16px; }
+    }
   </style>
 </head>
 <body>
-  <main class="login">
-    <div class="logo-box"><img src="assets/logo.png" alt="SpatiaEstate: Explore. Trust. Own."></div>
-    <h1>Welcome Back</h1>
-    <p class="sub">Access the Prop virtual tour management portal</p>
+  <header class="nav-top">
+    <div class="container">
+      <a href="#top" class="logo-box" aria-label="SpatiaEstate home"><img src="assets/logo.png" alt=""></a>
+      <nav class="links" aria-label="Main">
+        <a href="#features">Features</a>
+        <a href="#how">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="nav-cta">
+        <a href="login.html" class="login">Login</a>
+        <a href="login.html" class="btn btn-primary">Get Started</a>
+      </div>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" data-icon="menu"></button>
+    </div>
+  </header>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#contact">Contact</a>
+    <a href="login.html">Login</a>
+    <a href="login.html" class="btn btn-primary">Get Started</a>
+  </div>
 
-    <form id="loginForm" novalidate>
-      <div class="field">
-        <label class="label" for="email">Email or Username</label>
-        <div class="input-icon">
-          <span data-icon="mail" style="display:contents"></span>
-          <input id="email" class="input" type="text" placeholder="admin@spatiaestate.com or username" autocomplete="username">
+  <main id="top">
+    <section class="hero">
+      <div class="container">
+        <span class="pill">NOW LIVE IN NIGERIA &amp; DIASPORA MARKETS</span>
+        <h1>Explore. Trust. Own.</h1>
+        <p class="lead">Turn your properties into browser-native 360° virtual tour experiences. One link. One tour. One conversion. Sell remotely with ultimate trust.</p>
+        <div class="hero-ctas">
+          <a href="login.html" class="btn btn-primary">Get Started</a>
+          <a href="tour.html" class="btn btn-outline">Watch Demo</a>
+        </div>
+
+        <div class="devices">
+          <div class="tablet">
+            <div class="tablet-screen" id="pano" aria-label="360 degree preview. Drag to look around.">
+              <img src="assets/hero-pano.jpg" alt="Banana Island Waterfront Villa living room in 360°" id="panoImg">
+              <div class="nav-chip" data-icon="compass">360° Navigation Active</div>
+              <div class="villa-card"><b>Banana Island Waterfront Villa</b><span>₦120,000,000 • 5 Bedrooms</span></div>
+            </div>
+          </div>
+          <div class="phone">
+            <div class="phone-in">
+              <img src="assets/hero-phone.jpg" alt="Buyer exploring a Lekki suite on their phone">
+              <div class="phone-body">
+                <b>Lekki Peninsula Suite</b>
+                <small>Verified Docs <em>• Active Reserve</em></small>
+                <a href="reserve.html" class="btn btn-primary">Reserve Unit</a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="field">
-        <div class="row-label">
-          <label class="label" for="password">Password</label>
-          <a href="#" id="forgot">Forgot Password?</a>
+    </section>
+
+    <section class="trusted">
+      <div class="container">
+        <small>TRUSTED BY NIGERIA'S LEADING REAL ESTATE PIONEERS</small>
+        <div class="logos"><span>Landwey Investment</span><span>Revolution Plus</span><span>Mixta Africa</span><span>Adron Homes</span><span>Palton Morgan</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="container">
+        <div class="sec-head reveal">
+          <h2>Everything You Need to Sell Properties Remotely</h2>
+          <p>PROP bridges the distance gap. Provide verified details, immersive visuals, and secure reservation checkout.</p>
         </div>
-        <div class="input-icon">
-          <span data-icon="lock" style="display:contents"></span>
-          <input id="password" class="input" type="password" placeholder="••••••••••••" autocomplete="current-password">
-          <button type="button" class="peek trail" id="peek" aria-label="Show password" data-icon="eyeOff"></button>
+        <div class="features">
+          <article class="feature reveal"><div class="ic" data-icon="compass"></div><h3>360° Virtual Tours</h3><p>Immersive room-by-room property walkthroughs. Smooth browser-native transitions, no custom app installs required.</p></article>
+          <article class="feature reveal"><div class="ic" data-icon="chat"></div><h3>AI Property Assistant</h3><p>Automated virtual assistants trained directly on verified property datasets to answer buyer questions instantly.</p></article>
+          <article class="feature reveal"><div class="ic" data-icon="users"></div><h3>Lead Capture</h3><p>Turn passive virtual walkthroughs into hot, qualified leads. Monitor buyer interest and behavior hotspots.</p></article>
+          <article class="feature reveal"><div class="ic" data-icon="card"></div><h3>Reservation Deposits</h3><p>Allow high-intent buyers to lock down specific units securely with built-in Paystack, Stripe, and direct bank transfers.</p></article>
+          <article class="feature reveal"><div class="ic" data-icon="shield"></div><h3>Document Verification</h3><p>Publish C of O, survey plans, and building layouts directly within the platform to foster absolute buyer confidence.</p></article>
+          <article class="feature reveal"><div class="ic" data-icon="share"></div><h3>Share Anywhere</h3><p>Send immersive links easily across WhatsApp, Instagram DM, email, or MLS lists. Instant tour from any browser.</p></article>
         </div>
       </div>
-      <p class="err hidden" id="err">Enter your email and password to continue.</p>
-      <label class="check remember">
-        <input type="checkbox" checked>
-        <span class="box" data-icon="check"></span>
-        Remember this device for 30 days
-      </label>
-      <button class="btn btn-primary btn-lg" type="submit">Sign In</button>
-      <p class="secure">Secure enterprise connection enabled <span data-icon="shield" style="display:contents"></span></p>
-    </form>
+    </section>
+
+    <section class="section alt" id="how">
+      <div class="container">
+        <div class="sec-head reveal">
+          <h2>Launch Your Virtual Showrooms In Minutes</h2>
+          <p>Simple, structured onboarding flow designed for top real estate teams.</p>
+        </div>
+        <div class="steps">
+          <div class="step reveal"><i>1</i><h3>Create Your Property</h3><p>Upload images, legal blueprints, verified surveys, and price lists for the listing catalog.</p></div>
+          <div class="step reveal"><i>2</i><h3>Build the 360° Tour</h3><p>Connect panoramic views with intuitive interactive hotspots and immersive floor plans.</p></div>
+          <div class="step reveal"><i>3</i><h3>Share the Link</h3><p>Distribute optimized web tours seamlessly through your custom brand URL or social channels.</p></div>
+          <div class="step reveal"><i>4</i><h3>Convert Buyers</h3><p>Collect verified reservations, chat with hot prospects, and close sales remotely.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Platform numbers">
+      <div class="container">
+        <div><b data-count="2400" data-suffix="+">2,400+</b><span>PROPERTIES LISTED</span></div>
+        <div><b data-count="18000" data-suffix="+">18,000+</b><span>VIRTUAL TOURS TAKEN</span></div>
+        <div><b data-count="4.2" data-prefix="₦" data-suffix="B+" data-dec="1">₦4.2B+</b><span>IN RESERVATIONS</span></div>
+        <div><b data-count="142" data-suffix="+">142+</b><span>COUNTRIES REACHED</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <figure class="quote reveal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M8 12h12M4 17h16"/></svg>
+          <blockquote>"PROP completely transformed our approach to closing international buyers. Our clients in London, Houston, and Toronto can walk through apartments virtually and initiate secure reservation deposits in minutes with complete peace of mind."</blockquote>
+          <figcaption class="who"><img src="assets/amaka.jpg" alt=""><div><b>Amaka Obi</b><span>Lead Agent, Landwey Investment</span></div></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section alt cta" id="pricing">
+      <div class="container reveal">
+        <h2>Ready to Transform Your Property Sales?</h2>
+        <p>Join hundreds of developers and agencies worldwide powering secure remote transactions.</p>
+        <a href="login.html" class="btn btn-primary">Get Started Free</a>
+        <small>No credit card required. Free platform onboarding included.</small>
+      </div>
+    </section>
   </main>
+
+  <footer id="contact">
+    <div class="container">
+      <div class="foot-grid">
+        <div>
+          <div class="logo-box"><img src="assets/logo.png" alt="SpatiaEstate"></div>
+          <p>Browser-native 360° tours, remote reservations, and digital trust layers custom built for modern global real estate workflows.</p>
+        </div>
+        <div><h4>Product</h4><ul><li><a href="#features">Features</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#">API</a></li><li><a href="#">Documentation</a></li></ul></div>
+        <div><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Blog</a></li><li><a href="mailto:support@spatiaestate.com">Contact</a></li></ul></div>
+        <div><h4>Legal</h4><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Cookies</a></li></ul></div>
+      </div>
+      <div class="foot-bot">
+        <span>© 2026 SpatiaEstate. All rights reserved.</span>
+        <div class="social">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></a>
+          <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <script src="js/app.js"></script>
   <script>
-    const pw = document.getElementById('password');
-    document.getElementById('peek').addEventListener('click', (e) => {
-      const show = pw.type === 'password';
-      pw.type = show ? 'text' : 'password';
-      e.currentTarget.innerHTML = icon(show ? 'eye' : 'eyeOff');
-    });
-    document.getElementById('forgot').addEventListener('click', (e) => {
-      e.preventDefault();
-      toast('Reset link sent', 'Check your inbox for password reset instructions.');
-    });
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const ok = document.getElementById('email').value.trim() && pw.value.trim();
-      document.getElementById('err').classList.toggle('hidden', !!ok);
-      if (ok) location.href = 'dashboard.html';
-    });
+    ICONS.share = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>';
+
+    // Mobile menu
+    const burger = document.getElementById('burger'), menu = document.getElementById('mobileMenu');
+    burger.addEventListener('click', () => { const o = menu.classList.toggle('open'); burger.setAttribute('aria-expanded', o); });
+    menu.addEventListener('click', (e) => { if (e.target.tagName === 'A') menu.classList.remove('open'); });
+
+    // Drag-to-pan hero panorama
+    const box = document.getElementById('pano'), img = document.getElementById('panoImg');
+    let off = 0, sx = 0, so = 0, drag = false, auto = true, dir = -1;
+    const min = () => -(img.offsetWidth - box.offsetWidth);
+    const set = () => { off = Math.min(0, Math.max(min(), off)); img.style.transform = `translateX(${off}px)`; };
+    const center = () => { off = min() / 2; set(); };
+    img.complete ? center() : (img.onload = center);
+    window.addEventListener('resize', set);
+    box.addEventListener('pointerdown', (e) => { drag = true; auto = false; sx = e.clientX; so = off; box.classList.add('dragging'); box.setPointerCapture(e.pointerId); });
+    box.addEventListener('pointermove', (e) => { if (drag) { off = so + e.clientX - sx; set(); } });
+    ['pointerup', 'pointercancel'].forEach((ev) => box.addEventListener(ev, () => { drag = false; box.classList.remove('dragging'); }));
+    // gentle idle drift until the visitor drags
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      (function drift() {
+        if (!auto) return;
+        off += dir * 0.25; if (off <= min() || off >= 0) dir *= -1; set();
+        requestAnimationFrame(drift);
+      })();
+    }
+
+    // Reveal on scroll + stat count-up
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      en.target.classList.add('in'); io.unobserve(en.target);
+    }), { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach((el, i) => { el.style.transitionDelay = (i % 3) * 80 + 'ms'; io.observe(el); });
+
+    const fmt = (n, d) => n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+    const so2 = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      so2.disconnect();
+      document.querySelectorAll('[data-count]').forEach((el) => {
+        const end = +el.dataset.count, d = +(el.dataset.dec || 0), pre = el.dataset.prefix || '', suf = el.dataset.suffix || '';
+        const t0 = performance.now();
+        (function tick(t) {
+          const p = Math.min(1, (t - t0) / 1400), v = end * (1 - Math.pow(1 - p, 3));
+          el.textContent = pre + fmt(v, d) + suf;
+          if (p < 1) requestAnimationFrame(tick);
+        })(t0);
+      });
+    }), { threshold: 0.4 });
+    so2.observe(document.querySelector('.stats'));
   </script>
 </body>
 </html>

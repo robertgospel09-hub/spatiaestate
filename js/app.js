@@ -79,7 +79,7 @@
         <nav class="nav">
           ${NAV.map(([k, label, href, ic]) => `<a href="${href}" class="${k === active ? 'active' : ''}">${icon(ic)}${label}</a>`).join('')}
         </nav>
-        <a href="index.html" class="logout">${icon('logout')}Logout</a>
+        <a href="login.html" class="logout">${icon('logout')}Logout</a>
       </aside>`;
     const sb = document.getElementById('sidebar');
     document.querySelector('[data-menu]').addEventListener('click', (e) => { e.stopPropagation(); sb.classList.toggle('open'); });
